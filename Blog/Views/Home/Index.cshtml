@@ -1,8 +1,21 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Blog.Models;
+@using Microsoft.AspNetCore.Authorization;
+@model AllBlogsModel
+@inject IAuthorizationService Authorization
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row">
+    @foreach (var blog in Model.Blogs)
+    {
+    <section>
+        <h4>@blog.Title</h4>
+        <p>@blog.Author.FirstName @blog.Author.LastName</p>
+        @if (User.Identity.IsAuthenticated && (await Authorization.AuthorizeAsync(User, blog, Operations.Modify)).Succeeded)
+        {
+            <a asp-controller="Blog" asp-action="Edit" asp-route-id="@blog.Id">edit</a>
+        }
+    </section>
+    }
 </div>

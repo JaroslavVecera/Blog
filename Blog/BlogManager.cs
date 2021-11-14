@@ -14,6 +14,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Blog.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Blog
 {
@@ -21,15 +23,45 @@ namespace Blog
     {
         public UserManager<ApplicationUser> UserManager { get; set; }
         BlogService BlogService { get; set; }
+        IAuthorizationService AuthorizatoinService { get; set; }
 
-        public BlogManager(UserManager<ApplicationUser> User, BlogService blogService)
+        public BlogManager(UserManager<ApplicationUser> User, BlogService blogService, IAuthorizationService authorizationService)
         {
             UserManager = User;
             BlogService = blogService;
+            AuthorizatoinService = authorizationService;
+        }
+
+        public List<BlogModel> GetAllBlogs()
+        {
+            return BlogService.AllBlogs();
+        }
+
+        public List<BlogModel> GetUserBlogs(ApplicationUser u)
+        {
+            return BlogService.AllBlogs().Where(blog => blog.Author == u).ToList();
+        }
+
+        public async Task<ActionResult<EditBlogModel>> GetEditModel(int id, ClaimsPrincipal principals)
+        {
+            var blog = BlogService.GetBlog(id);
+            if (blog == null)
+                return new NotFoundResult();
+            var authorization = await AuthorizatoinService.AuthorizeAsync(principals, blog, Operations.Modify);
+            if (!authorization.Succeeded)
+            {
+                if (principals.Identity.IsAuthenticated)
+                    return new ForbidResult();
+                else
+                    return new ChallengeResult();
+
+            }
+            return new EditBlogModel() { Id = blog.Id, Title = blog.Title, Content = blog.Content };
         }
 
         public async Task<BlogModel> CreateBlog(CreateBlogModel model, ClaimsPrincipal claimsPrincipal)
         {
+            ApplicationUser a = await UserManager.GetUserAsync(claimsPrincipal);
             BlogModel m = new BlogModel()
             {
                 Author = await UserManager.GetUserAsync(claimsPrincipal),
@@ -39,6 +71,20 @@ namespace Blog
             };
             m = await BlogService.CreateBlog(m);
             return m;
+        }
+
+        public async Task<ActionResult<EditBlogModel>> EditBlog(EditBlogModel model, ClaimsPrincipal principals)
+        {
+            var oldBlog = BlogService.GetBlog(model.Id);
+            if (oldBlog == null)
+                return new NotFoundResult();
+            var authorization = await AuthorizatoinService.AuthorizeAsync(principals, oldBlog, Operations.Modify);
+            if (!authorization.Succeeded)
+                return new ForbidResult();
+            oldBlog.Title = model.Title;
+            oldBlog.Content = model.Content;
+            await BlogService.EditBlog(oldBlog);
+            return model;
         }
     }
 }

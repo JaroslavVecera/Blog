@@ -11,16 +11,16 @@ namespace Blog.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+        BlogManager BlogManager { get; set; }
 
         public IActionResult Index()
         {
-            return View();
+            return View(new AllBlogsModel() { Blogs = BlogManager.GetAllBlogs() });
+        }
+
+        public HomeController(BlogManager blogManager)
+        {
+            BlogManager = blogManager;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

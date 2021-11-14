@@ -450,3 +450,4 @@ C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Areas\Identity\Page
 C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Areas\Identity\Pages\_ValidationScriptsPartial.cshtml.g.cs
 C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Areas\Identity\Pages\_ViewImports.cshtml.g.cs
 C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\Manage\Index.cshtml.g.cs
+C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Views\Blog\Edit.cshtml.g.cs

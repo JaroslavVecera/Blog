@@ -1,14 +1,14 @@
 ﻿@using Blog;
-@model CreateBlogModel
+@model EditBlogModel
 @{
-    ViewData["Title"] = "Create blog";
+    ViewData["Title"] = "Edit blog";
 }
 
 <h1>@ViewData["Title"]</h1>
 <div>
     <div class="col-md-4">
         <section>
-            <form id="blog" method="post" asp-controller="Blog" asp-action="Create">
+            <form id="blog" method="post" asp-controller="Blog" asp-action="Edit">
                 <h4>Use a local account to log in.</h4>
                 <hr />
                 <div class="form-group">
@@ -22,7 +22,7 @@
                     <span asp-validation-for="Content" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary" form="blog">Post</button>
+                    <button type="submit" class="btn btn-primary" form="blog">Edit</button>
                 </div>
             </form>
         </section>

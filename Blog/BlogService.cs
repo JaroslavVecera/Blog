@@ -25,9 +25,27 @@ namespace Blog
             DBContext = dbContext;
         }
 
+        public BlogModel GetBlog(int id)
+        {
+            return DBContext.Blogs.Include(blog => blog.Author).FirstOrDefault(blog => blog.Id == id);
+        }
+
+
+        public List<BlogModel> AllBlogs()
+        {
+            return DBContext.Blogs.Include(blog => blog.Author).ToList();
+        }
+
         public async Task<BlogModel> CreateBlog(BlogModel model)
         {
             DBContext.Add(model);
+            await DBContext.SaveChangesAsync();
+            return model;
+        }
+
+        public async Task<BlogModel> EditBlog(BlogModel model)
+        {
+            DBContext.Update(model);
             await DBContext.SaveChangesAsync();
             return model;
         }

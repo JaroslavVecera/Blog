@@ -1,16 +1,15 @@
+using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Blog.Models
 {
-    public class BlogModel
+    public class EditBlogModel
     {
         public int Id { get; set; }
-        public ApplicationUser Author { get; set; }
+        [Required]
         public string Title { get; set; }
+        [Required]
         public string Content { get; set; }
-        public DateTime LastChange { get; set; }
-        public List<CommentModel> Comments { get; set; }
     }
 }
