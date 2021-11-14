@@ -27,13 +27,19 @@ namespace Blog
 
         public BlogModel GetBlog(int id)
         {
-            return DBContext.Blogs.Include(blog => blog.Author).FirstOrDefault(blog => blog.Id == id);
+            return DBContext.Blogs
+                .Include(blog => blog.Author)
+                .Include(blog => blog.Comments).ThenInclude(comment => comment.Author)
+                .FirstOrDefault(blog => blog.Id == id);
         }
 
 
         public List<BlogModel> AllBlogs()
         {
-            return DBContext.Blogs.Include(blog => blog.Author).ToList();
+            return DBContext.Blogs
+                .Include(blog => blog.Author)
+                .Include(blog => blog.Comments).ThenInclude(comment => comment.Author)
+                .ToList();
         }
 
         public async Task<BlogModel> CreateBlog(BlogModel model)

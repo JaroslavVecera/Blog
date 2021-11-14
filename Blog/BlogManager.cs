@@ -73,6 +73,24 @@ namespace Blog
             return m;
         }
 
+        public async Task<ActionResult<BlogModel>> AddComment(ViewBlogModel model, ClaimsPrincipal claimsPrincipal)
+        {
+            var oldBlog = BlogService.GetBlog(model.Blog.Id);
+            if (oldBlog == null)
+                return new NotFoundResult();
+            ApplicationUser a = await UserManager.GetUserAsync(claimsPrincipal);
+            if (a == null)
+                return new ChallengeResult();
+            CommentModel m = new CommentModel()
+            {
+                Author = a,
+                Content = model.Comment,
+            };
+            oldBlog.Comments.Add(m);
+            await BlogService.EditBlog(oldBlog);
+            return oldBlog;
+        }
+
         public async Task<ActionResult<EditBlogModel>> EditBlog(EditBlogModel model, ClaimsPrincipal principals)
         {
             var oldBlog = BlogService.GetBlog(model.Id);

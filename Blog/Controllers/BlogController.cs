@@ -42,6 +42,14 @@ namespace Blog.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> Comment(ViewBlogModel vbm)
+        {
+            await BlogManager.AddComment(vbm, User);
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
         public async Task<IActionResult> Create(CreateBlogModel cbm)
         {
             await BlogManager.CreateBlog(cbm, User);

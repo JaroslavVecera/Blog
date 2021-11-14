@@ -7,6 +7,6 @@ namespace Blog.Models
     public class ViewBlogModel
     {
         public BlogModel Blog { get; set; }
-        public CommentModel Comment { get; set; }
+        public string Comment { get; set; }
     }
 }

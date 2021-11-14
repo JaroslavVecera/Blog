@@ -1,16 +1,29 @@
-﻿@model BlogModel
+﻿@model ViewBlogModel
 @{
     ViewData["Title"] = "Blog";
 }
 
-<h1>@Model.Title</h1>
+<h1>@Model.Blog.Title</h1>
 <ul>
-    @foreach (var comment in Model.Comments)
-     {
-        <li> 
+    @foreach (var comment in Model.Blog.Comments)
+    {
+        <li>
             <a asp-controller="User" asp-action="Index" asp-route-id="@comment.Author.Id">@comment.Author.FirstName @comment.Author.LastName</a>
             <p>@comment.Content</p>
         </li>
-     }
+    }
 </ul>
+<hr />
+@if (User.Identity.IsAuthenticated)
+{
+    <form id="comment" method="post" asp-controller="Blog" asp-action="Comment">
+        <div class="form-group">
+            <label asp-for="Comment"></label>
+            <input asp-for="Comment" class="form-control" />
+        </div>
+    </form>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" form="blog">Post</button>
+    </div>
+}
 
