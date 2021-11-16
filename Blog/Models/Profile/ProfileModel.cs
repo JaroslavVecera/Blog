@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Blog.Models
 {
-    public class UserModel
+    public class ProfileModel
     {
         public string AboutMe { get; set; }
         public DateTime Birth { get; set; }
@@ -12,7 +12,7 @@ namespace Blog.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string LiveIn { get; set; }
-        public List<CommentModel> Comments { get; set; }
-        public List<BlogModel> Blogs { get; set; }
+        public List<CommentModel> Comments { get; set; } = new List<CommentModel>();
+        public List<BlogModel> Blogs { get; set; } = new List<BlogModel>();
     }
 }

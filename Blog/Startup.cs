@@ -61,6 +61,8 @@ namespace Blog
 
             services.AddScoped<BlogManager>();
             services.AddScoped<BlogService>();
+            services.AddScoped<ProfileManager>();
+            services.AddScoped<ProfileService>();
             services.AddTransient<IAuthorizationHandler, BlogAuthorization>();
         }
 

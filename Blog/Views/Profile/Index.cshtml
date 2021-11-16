@@ -1,0 +1,58 @@
+﻿@using Blog.Models;
+@using Microsoft.AspNetCore.Authorization;
+@model ProfileModel
+@inject IAuthorizationService Authorization
+@{
+    ViewData["Title"] = "Home";
+}
+
+<h1>User profile @Model.FirstName @Model.LastName</h1>
+<div>
+    <label>Email</label>
+    <p>@Model.Email</p>
+</div>
+<div>
+    <label>About me</label>
+    <p>@Model.AboutMe</p>
+</div>
+<div>
+    <label>Phone number</label>
+    <p>@Model.PhoneNumber</p>
+</div>
+<div>
+    <label>Birth</label> 
+    <p>@Model.Birth</p>
+</div>
+<div>
+    <label>Lives in</label>
+    <p>@Model.LiveIn</p>
+</div>
+@if (Model.Blogs.Any())
+{
+<div class="row">
+    <h2>Blogs</h2>
+    @foreach (var blog in Model.Blogs)
+    {
+        <section>
+            <h4><a asp-controller="Blog" asp-action="Index" asp-route-id="@blog.Id">@blog.Title</a></h4>
+            @if (User.Identity.IsAuthenticated && (await Authorization.AuthorizeAsync(User, blog, Operations.Modify)).Succeeded)
+            {
+                <a asp-controller="Blog" asp-action="Edit" asp-route-id="@blog.Id">edit</a>
+            }
+        </section>
+    }
+</div>
+}
+
+@if (Model.Comments.Any())
+{
+<div class="row">
+    <h2>Comments</h2>
+    @foreach (var comment in Model.Comments)
+    {
+        <section>
+            <p>@comment.Content</p>
+        </section>
+    }
+</div>
+}

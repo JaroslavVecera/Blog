@@ -4,9 +4,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Blog;
+using Blog.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blog.Areas.Identity.Pages.Account.Manage
 {
@@ -14,11 +16,14 @@ namespace Blog.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        ApplicationDbContext DBContext { get; set; }
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            ApplicationDbContext dbContext)
         {
+            DBContext = dbContext;
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -36,6 +41,23 @@ namespace Blog.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "About me")]
+            public string AboutMe { get; set; }
+
+            [Display(Name = "Birth date")]
+            public DateTime Birth { get; set; }
+
+            [Display(Name = "First name")]
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
+            public string FirstName { get; set; }
+            
+            [Display(Name = "Lastname")]
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
+            public string LastName { get; set; }
+
+            [Display(Name = "Live in")]
+            public string LiveIn { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -48,7 +70,12 @@ namespace Blog.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                AboutMe = user.AboutMe,
+                Birth = user.Birth,
+                LiveIn = user.LiveIn,
             };
         }
 
@@ -88,6 +115,14 @@ namespace Blog.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+
+            user.FirstName = Input.FirstName;
+            user.LastName = Input.LastName;
+            user.AboutMe = Input.AboutMe;
+            user.LiveIn = Input.LiveIn;
+            user.Birth = Input.Birth;
+            DBContext.Update(user);
+            DBContext.SaveChanges();
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";

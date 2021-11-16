@@ -21,7 +21,7 @@
     @foreach (var comment in Model.Blog.Comments)
     {
         <li>
-            <a asp-controller="User" asp-action="Index" asp-route-id="@comment.Author.Id">@comment.Author.FirstName @comment.Author.LastName</a>
+            <a asp-controller="Profile" asp-action="Index" asp-route-id="@comment.Author.Id">@comment.Author.FirstName @comment.Author.LastName</a>
             <p>@comment.Created</p>
             <p>@comment.Content</p>
         </li>
