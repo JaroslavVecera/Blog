@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Blog.Models
 {
-    public class AllBlogsModel
+    public class BlogsModel
     {
         public List<BlogModel> Blogs { get; set; }
     }

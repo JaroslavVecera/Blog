@@ -37,9 +37,28 @@ namespace Blog
             return BlogService.AllBlogs();
         }
 
-        public List<BlogModel> GetUserBlogs(ApplicationUser u)
+        public ActionResult<ViewBlogModel> GetViewModel(int id, ClaimsPrincipal principals)
         {
-            return BlogService.AllBlogs().Where(blog => blog.Author == u).ToList();
+            var blog = BlogService.GetBlog(id);
+            if (blog == null)
+                return new NotFoundResult();
+            return new ViewBlogModel() { Blog = blog, BlogId=blog.Id, Comment = "" };
+        }
+
+        public async Task<List<BlogModel>> GetUserBlogs(ClaimsPrincipal principals)
+        {
+            ApplicationUser u = await UserManager.GetUserAsync(principals);
+            if (u == null)
+                return new List<BlogModel>();
+            return BlogService.UserBlogs(u);
+        }
+
+        public async Task<List<CommentModel>> GetUserComments(ClaimsPrincipal principals)
+        {
+            ApplicationUser u = await UserManager.GetUserAsync(principals);
+            if (u == null)
+                return new List<CommentModel>();
+            return BlogService.UserComments(u);
         }
 
         public async Task<ActionResult<EditBlogModel>> GetEditModel(int id, ClaimsPrincipal principals)
@@ -54,17 +73,29 @@ namespace Blog
                     return new ForbidResult();
                 else
                     return new ChallengeResult();
-
             }
             return new EditBlogModel() { Id = blog.Id, Title = blog.Title, Content = blog.Content };
         }
 
-        public async Task<BlogModel> CreateBlog(CreateBlogModel model, ClaimsPrincipal claimsPrincipal)
+        public async void DeleteUserBlogsAndComments(ClaimsPrincipal principals)
         {
-            ApplicationUser a = await UserManager.GetUserAsync(claimsPrincipal);
+
+            foreach (var blog in await GetUserBlogs(principals))
+            {
+                BlogService.DeleteBlog(blog);
+            }
+            foreach (var comment in await GetUserComments(principals))
+            {
+                BlogService.DeleteComments(await GetUserComments(principals));
+            }
+        }
+
+        public async Task<BlogModel> CreateBlog(CreateBlogModel model, ClaimsPrincipal principals)
+        {
+            ApplicationUser a = await UserManager.GetUserAsync(principals);
             BlogModel m = new BlogModel()
             {
-                Author = await UserManager.GetUserAsync(claimsPrincipal),
+                Author = await UserManager.GetUserAsync(principals),
                 LastChange = DateTime.Now,
                 Content = model.Content,
                 Title = model.Title
@@ -73,9 +104,22 @@ namespace Blog
             return m;
         }
 
+        public async Task<ActionResult<BlogModel>> DeleteBlog(int id, ClaimsPrincipal principals)
+        {
+            ApplicationUser a = await UserManager.GetUserAsync(principals);
+            var oldBlog = BlogService.GetBlog(id);
+            if (oldBlog == null)
+                return new NotFoundResult();
+            var authorization = await AuthorizatoinService.AuthorizeAsync(principals, oldBlog, Operations.Delete);
+            if (!authorization.Succeeded)
+                return new ForbidResult();
+            BlogService.DeleteBlog(oldBlog);
+            return null;
+        }
+
         public async Task<ActionResult<BlogModel>> AddComment(ViewBlogModel model, ClaimsPrincipal claimsPrincipal)
         {
-            var oldBlog = BlogService.GetBlog(model.Blog.Id);
+            var oldBlog = BlogService.GetBlog(model.BlogId);
             if (oldBlog == null)
                 return new NotFoundResult();
             ApplicationUser a = await UserManager.GetUserAsync(claimsPrincipal);
@@ -85,9 +129,10 @@ namespace Blog
             {
                 Author = a,
                 Content = model.Comment,
+                Created = DateTime.Now
             };
             oldBlog.Comments.Add(m);
-            await BlogService.EditBlog(oldBlog);
+            await BlogService.AddComment(oldBlog, m);
             return oldBlog;
         }
 

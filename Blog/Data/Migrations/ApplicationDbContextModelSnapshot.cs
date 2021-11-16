@@ -116,6 +116,34 @@ namespace Blog.Data.Migrations
                     b.ToTable("Blogs");
                 });
 
+            modelBuilder.Entity("Blog.Models.CommentModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("BlogModelId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("BlogModelId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -260,6 +288,19 @@ namespace Blog.Data.Migrations
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("Blog.Models.CommentModel", b =>
+                {
+                    b.HasOne("Blog.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("Blog.Models.BlogModel", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("BlogModelId");
+
+                    b.Navigation("Author");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -309,6 +350,11 @@ namespace Blog.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Blog.Models.BlogModel", b =>
+                {
+                    b.Navigation("Comments");
                 });
 #pragma warning restore 612, 618
         }

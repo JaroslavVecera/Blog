@@ -9,6 +9,7 @@ namespace Blog.Data
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Blog.Models.BlogModel> Blogs { get; set; }
+        public DbSet<Blog.Models.CommentModel> Comments { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

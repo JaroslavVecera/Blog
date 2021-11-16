@@ -1,0 +1,20 @@
+﻿@using Blog.Models;
+@using Microsoft.AspNetCore.Authorization;
+@model BlogsModel
+@inject IAuthorizationService Authorization
+@{
+    ViewData["Title"] = "My blogs";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    @foreach (var blog in Model.Blogs)
+    {
+    <section>
+        <h4><a asp-controller="Blog" asp-action="Index" asp-route-id="@blog.Id">@blog.Title</a></h4>
+        <a asp-controller="User" asp-action="Index" asp-route-id="@blog.Author.Id">@blog.Author.FirstName @blog.Author.LastName</a>
+        <a asp-controller="Blog" asp-action="Edit" asp-route-id="@blog.Id">edit</a>
+    </section>
+    }
+</div>

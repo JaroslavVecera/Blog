@@ -22,8 +22,9 @@ namespace Blog.Areas.Identity.Pages.Account
             _logger = logger;
         }
 
-        public void OnGet()
+        public async Task<IActionResult> OnGet()
         {
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPost(string returnUrl = null)

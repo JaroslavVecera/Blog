@@ -29,12 +29,5 @@
     </div>
 </div>
 @section Scripts {
-<script src="https://cdn.ckeditor.com/ckeditor5/21.0.0/classic/ckeditor.js"></script>
-<script>
-        ClassicEditor
-            .create(document.querySelector('.textarea'))
-            .catch(error => {
-                console.error(error);
-            });
-</script>
-}
+        <partial name="_ValidationScriptsPartial" />
+    }

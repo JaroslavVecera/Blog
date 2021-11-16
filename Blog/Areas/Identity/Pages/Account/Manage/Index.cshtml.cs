@@ -43,6 +43,7 @@ namespace Blog.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
+            StatusMessage = null;
             Username = userName;
 
             Input = new InputModel

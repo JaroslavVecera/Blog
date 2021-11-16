@@ -1,14 +1,28 @@
-﻿@model ViewBlogModel
+﻿@using Blog.Models;
+@using Microsoft.AspNetCore.Authorization;
+@inject IAuthorizationService Authorization
+@model ViewBlogModel
 @{
     ViewData["Title"] = "Blog";
 }
 
 <h1>@Model.Blog.Title</h1>
+<p>@Model.Blog.Content</p>
+
+@if (User.Identity.IsAuthenticated && (await Authorization.AuthorizeAsync(User, Model.Blog, Operations.Modify)).Succeeded)
+{
+    <a asp-controller="Blog" asp-action="Edit" asp-route-id="@Model.BlogId">edit</a>
+    <form method="post" id="delete">
+        <button form="delete" type="submit" method asp-controller="Blog" asp-action="Delete" asp-route-id="@Model.BlogId">delete</button>
+    </form>
+}
+
 <ul>
     @foreach (var comment in Model.Blog.Comments)
     {
         <li>
             <a asp-controller="User" asp-action="Index" asp-route-id="@comment.Author.Id">@comment.Author.FirstName @comment.Author.LastName</a>
+            <p>@comment.Created</p>
             <p>@comment.Content</p>
         </li>
     }
@@ -17,13 +31,22 @@
 @if (User.Identity.IsAuthenticated)
 {
     <form id="comment" method="post" asp-controller="Blog" asp-action="Comment">
+
+        <div class="form-group">
+            <input asp-for="BlogId" class="form-control" type="hidden" />
+        </div>
         <div class="form-group">
             <label asp-for="Comment"></label>
             <input asp-for="Comment" class="form-control" />
         </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" form="comment">Post</button>
+        </div>
     </form>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary" form="blog">Post</button>
-    </div>
 }
 
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

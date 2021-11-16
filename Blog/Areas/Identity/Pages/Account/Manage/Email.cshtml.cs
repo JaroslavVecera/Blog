@@ -51,6 +51,8 @@ namespace Blog.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(ApplicationUser user)
         {
+            StatusMessage = null;
+
             var email = await _userManager.GetEmailAsync(user);
             Email = email;
 
@@ -93,55 +95,42 @@ namespace Blog.Areas.Identity.Pages.Account.Manage
             {
                 var userId = await _userManager.GetUserIdAsync(user);
                 var code = await _userManager.GenerateChangeEmailTokenAsync(user, Input.NewEmail);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                var callbackUrl = Url.Page(
-                    "/Account/ConfirmEmailChange",
-                    pageHandler: null,
-                    values: new { userId = userId, email = Input.NewEmail, code = code },
-                    protocol: Request.Scheme);
-                await _emailSender.SendEmailAsync(
-                    Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                if (userId == null || email == null || code == null)
+                {
+                    return RedirectToPage("/Index");
+                }
+                if (user == null)
+                {
+                    return NotFound($"Unable to load user with ID '{userId}'.");
+                }
 
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
-                return RedirectToPage();
-            }
+                var result = await _userManager.ChangeEmailAsync(user, Input.NewEmail, code);
+                if (!result.Succeeded)
+                {
+                    StatusMessage = "Error changing email.";
+                    return Page();
+                }
 
-            StatusMessage = "Your email is unchanged.";
-            return RedirectToPage();
-        }
+                // In our UI email and user name are one and the same, so when we update the email
+                // we need to update the user name.
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.NewEmail);
+                if (!setUserNameResult.Succeeded)
+                {
+                    await _userManager.ChangeEmailAsync(user, email, code);
+                    StatusMessage = "The email is already associated with another account";
+                    return Page();
+                }
 
-        public async Task<IActionResult> OnPostSendVerificationEmailAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
+                await _signInManager.RefreshSignInAsync(user);
+                StatusMessage = "Your email has been changed.";
+                Email = Input.NewEmail;
                 return Page();
             }
-
-            var userId = await _userManager.GetUserIdAsync(user);
-            var email = await _userManager.GetEmailAsync(user);
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            var callbackUrl = Url.Page(
-                "/Account/ConfirmEmail",
-                pageHandler: null,
-                values: new { area = "Identity", userId = userId, code = code },
-                protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-            StatusMessage = "Verification email sent. Please check your email.";
-            return RedirectToPage();
+            else
+            {
+                StatusMessage = "Your email is unchanged.";
+                return RedirectToPage();
+            }
         }
     }
 }

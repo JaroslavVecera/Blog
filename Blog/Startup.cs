@@ -56,7 +56,7 @@ namespace Blog
                 options.User.RequireUniqueEmail = false;
             });
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            services.AddDefaultIdentity<ApplicationUser>(options => { options.SignIn.RequireConfirmedAccount = false; options.SignIn.RequireConfirmedEmail = false; })
                         .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped<BlogManager>();

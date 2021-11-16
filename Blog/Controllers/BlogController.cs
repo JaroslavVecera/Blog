@@ -21,9 +21,14 @@ namespace Blog.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Index()
+        public IActionResult Index(int? id)
         {
-            return View();
+            if (id == null)
+                return new BadRequestResult();
+            var actionResult = BlogManager.GetViewModel(id.Value, User);
+            if (actionResult.Result == null)
+                return View(actionResult.Value);
+            return actionResult.Result;
         }
 
         public IActionResult Create()
@@ -45,15 +50,26 @@ namespace Blog.Controllers
         public async Task<IActionResult> Comment(ViewBlogModel vbm)
         {
             await BlogManager.AddComment(vbm, User);
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { Id = vbm.BlogId });
         }
 
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateBlogModel cbm)
         {
-            await BlogManager.CreateBlog(cbm, User);
-            return View();
+            var model = await BlogManager.CreateBlog(cbm, User);
+            return RedirectToAction("Index", new { model.Id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int? id, ViewBlogModel vbm)
+        {
+            if (id == null)
+                return NotFound();
+            var actionResult = await BlogManager.DeleteBlog(id.Value, User);
+            if (actionResult == null || actionResult.Result == null)
+                return RedirectToAction("Index", "Home");
+            return actionResult.Result;
         }
 
         [HttpPost]
@@ -61,7 +77,7 @@ namespace Blog.Controllers
         {
             var actionResult = await BlogManager.EditBlog(ebm, User);
             if (actionResult.Result == null)
-                return RedirectToAction("Edit", new { ebm.Id });
+                return RedirectToAction("Index", new { ebm.Id });
             return actionResult.Result;
         }
     }

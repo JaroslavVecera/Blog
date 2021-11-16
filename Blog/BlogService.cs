@@ -42,6 +42,23 @@ namespace Blog
                 .ToList();
         }
 
+        public List<BlogModel>UserBlogs(ApplicationUser u)
+        {
+            return DBContext.Blogs
+                .Include(blog => blog.Author)
+                .Include(blog => blog.Comments).ThenInclude(comment => comment.Author)
+                .Where(blog => blog.Author == u)
+                .ToList();
+        }
+
+        public List<CommentModel> UserComments(ApplicationUser u)
+        {
+            return DBContext.Comments
+                .Include(comment => comment.Author)
+                .Where(comment => comment.Author == u)
+                .ToList();
+        }
+
         public async Task<BlogModel> CreateBlog(BlogModel model)
         {
             DBContext.Add(model);
@@ -54,6 +71,27 @@ namespace Blog
             DBContext.Update(model);
             await DBContext.SaveChangesAsync();
             return model;
+        }
+
+        public void DeleteBlog(BlogModel model)
+        {
+            DBContext.RemoveRange(model.Comments);
+            DBContext.Remove(model);
+            DBContext.SaveChanges();
+        }
+
+        public void DeleteComments(List<CommentModel> comments)
+        {
+            DBContext.RemoveRange(comments);
+            DBContext.SaveChanges();
+        }
+
+        public async Task<BlogModel> AddComment(BlogModel blog, CommentModel comment)
+        {
+            DBContext.Update(blog);
+            DBContext.Add(comment);
+            await DBContext.SaveChangesAsync();
+            return blog;
         }
     }
 }

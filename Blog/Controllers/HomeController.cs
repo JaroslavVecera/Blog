@@ -1,4 +1,5 @@
 ﻿using Blog.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,7 +16,13 @@ namespace Blog.Controllers
 
         public IActionResult Index()
         {
-            return View(new AllBlogsModel() { Blogs = BlogManager.GetAllBlogs() });
+            return View(new BlogsModel() { Blogs = BlogManager.GetAllBlogs() });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> MyBlogs()
+        {
+            return View(new BlogsModel() { Blogs = await BlogManager.GetUserBlogs(User) });
         }
 
         public HomeController(BlogManager blogManager)
