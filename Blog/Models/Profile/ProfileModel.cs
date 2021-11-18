@@ -5,6 +5,7 @@ namespace Blog.Models
 {
     public class ProfileModel
     {
+        public string UserId { get; set; }
         public string AboutMe { get; set; }
         public DateTime Birth { get; set; }
         public string Email { get; set; }
@@ -12,7 +13,7 @@ namespace Blog.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string LiveIn { get; set; }
-        public List<CommentModel> Comments { get; set; } = new List<CommentModel>();
-        public List<BlogModel> Blogs { get; set; } = new List<BlogModel>();
+        public List<CommentLinkModel> LatestComments { get; set; } = new List<CommentLinkModel>();
+        public List<BlogModel> LatestBlogs { get; set; } = new List<BlogModel>();
     }
 }

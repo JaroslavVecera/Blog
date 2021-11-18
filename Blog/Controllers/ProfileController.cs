@@ -25,7 +25,29 @@ namespace Blog.Controllers
         {
             if (id == null)
                 return new BadRequestResult();
-            var actionResult = ProfileManager.GetViewModel(id, User);
+            var actionResult = ProfileManager.GetViewModel(id, User, true);
+            if (actionResult.Result == null)
+                return View(actionResult.Value);
+            return actionResult.Result;
+        }
+
+        [AllowAnonymous]
+        public IActionResult Blogs(string id)
+        {
+            if (id == null)
+                return new BadRequestResult();
+            var actionResult = ProfileManager.GetViewModel(id, User, false);
+            if (actionResult.Result == null)
+                return View(actionResult.Value);
+            return actionResult.Result;
+        }
+
+        [AllowAnonymous]
+        public IActionResult Comments(string id)
+        {
+            if (id == null)
+                return new BadRequestResult();
+            var actionResult = ProfileManager.GetViewModel(id, User, false);
             if (actionResult.Result == null)
                 return View(actionResult.Value);
             return actionResult.Result;

@@ -6,47 +6,76 @@
     ViewData["Title"] = "Blog";
 }
 
-<h1>@Model.Blog.Title</h1>
-<p>@Model.Blog.Content</p>
-
-@if (User.Identity.IsAuthenticated && (await Authorization.AuthorizeAsync(User, Model.Blog, Operations.Modify)).Succeeded)
-{
-    <a asp-controller="Blog" asp-action="Edit" asp-route-id="@Model.BlogId">edit</a>
-    <form method="post" id="delete">
-        <button form="delete" type="submit" method asp-controller="Blog" asp-action="Delete" asp-route-id="@Model.BlogId">delete</button>
-    </form>
-}
-
-<ul>
-    @foreach (var comment in Model.Blog.Comments)
+<div class="row w-100">
+    <h1>@Model.Blog.Title</h1>
+    @if (User.Identity.IsAuthenticated && (await Authorization.AuthorizeAsync(User, Model.Blog, Operations.Modify)).Succeeded)
     {
-        <li>
-            <a asp-controller="Profile" asp-action="Index" asp-route-id="@comment.Author.Id">@comment.Author.FirstName @comment.Author.LastName</a>
-            <p>@comment.Created</p>
-            <p>@comment.Content</p>
-        </li>
-    }
-</ul>
-<hr />
-@if (User.Identity.IsAuthenticated)
-{
-    <form id="comment" method="post" asp-controller="Blog" asp-action="Comment">
-
-        <div class="form-group">
-            <input asp-for="BlogId" class="form-control" type="hidden" />
-        </div>
-        <div class="form-group">
-            <label asp-for="Comment"></label>
-            <input asp-for="Comment" class="form-control" />
-        </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary" form="comment">Post</button>
-        </div>
+<div class="btn-group ml-auto">
+    <div class="mr-2">
+        <a asp-controller="Blog" asp-action="Edit" asp-route-id="@Model.BlogId" class="btn btn-primary">Edit</a>
+    </div>
+    <form method="post" id="delete">
+        <button form="delete" type="submit" class="btn btn-danger" method asp-controller="Blog" asp-action="Delete" asp-route-id="@Model.BlogId">Delete</button>
     </form>
-}
+</div>
+    }
+</div>
+<p>@Model.Blog.Content</p>
+<div class="d-flex text-black-50">
+    <span>Author: <a class="text-black-50" asp-controller="Profile" asp-action="Index" asp-route-id="@Model.Blog.Author.Id">@Model.Blog.Author.FirstName @Model.Blog.Author.LastName</a></span>
+    <span class="ml-auto">Last change: @Model.Blog.LastChange</span>
+</div>
+<hr class="mb-5 mt-4"/>
 
 
+<div class="row d-flex justify-content-center">
+    <div class="col-lg-12">
+        <div class="">
+                <h4 class="card-title">Comments</h4>
+
+            <div class="comment-widgets">
+                @foreach (var comment in Model.Blog.Comments)
+                {
+                    <div class="d-flex flex-row comment-row m-t-0">
+                        <div class="comment-text w-100">
+                            <h6 class="font-medium"><a class="text-dark" asp-controller="Profile" asp-action="Index" asp-route-id="@comment.Author.Id">@comment.Author.FirstName @comment.Author.LastName</a></h6>
+                            <span class="m-b-15 d-block">@comment.Content</span>
+                            <div class="comment-footer"> <span class="text-muted float-right">@comment.Created</span> </div>
+                        </div>
+                    </div>
+                }
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form id="comment" method="post" asp-controller="Blog" asp-action="Comment">
+
+                        <div class="form-group">
+                            <input asp-for="BlogId" class="form-control" type="hidden" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Comment"></label>
+                            <textarea style="resize: none;" asp-for="Comment" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" form="comment">Post</button>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        const tx = document.getElementsByTagName("textarea");
+        for (let i = 0; i < tx.length; i++) {
+            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;resize:none;");
+            tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput() {
+            this.style.height = "auto";
+            this.style.height = (this.scrollHeight) + "px";
+        }</script>
 }

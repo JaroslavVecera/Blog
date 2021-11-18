@@ -456,3 +456,5 @@ C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Areas\Identity\Page
 C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Areas\Identity\Pages\Account\ResendEmailConfirmation.cshtml.g.cs
 C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Views\Home\MyBlogs.cshtml.g.cs
 C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Views\Profile\Index.cshtml.g.cs
+C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Views\Profile\Blogs.cshtml.g.cs
+C:\Users\Jarek\source\repos\Blog\Blog\obj\Debug\net5.0\Razor\Views\Profile\Comments.cshtml.g.cs

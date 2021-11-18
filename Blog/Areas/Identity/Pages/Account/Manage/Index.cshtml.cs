@@ -48,10 +48,12 @@ namespace Blog.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Birth date")]
             public DateTime Birth { get; set; }
 
+            [Required(AllowEmptyStrings = false)]
             [Display(Name = "First name")]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
             public string FirstName { get; set; }
-            
+
+            [Required(AllowEmptyStrings = false)]
             [Display(Name = "Lastname")]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
             public string LastName { get; set; }

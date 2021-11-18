@@ -6,53 +6,80 @@
     ViewData["Title"] = "Home";
 }
 
-<h1>User profile @Model.FirstName @Model.LastName</h1>
+<h1>@Model.FirstName @Model.LastName's profile</h1>
 <div>
-    <label>Email</label>
+    <label class="text-black-50">Email</label>
     <p>@Model.Email</p>
 </div>
 <div>
-    <label>About me</label>
+    <label class="text-black-50">About me</label>
     <p>@Model.AboutMe</p>
 </div>
 <div>
-    <label>Phone number</label>
+    <label class="text-black-50">Phone number</label>
     <p>@Model.PhoneNumber</p>
 </div>
 <div>
-    <label>Birth</label> 
+    <label class="text-black-50">Birth</label> 
     <p>@Model.Birth</p>
 </div>
 <div>
-    <label>Lives in</label>
+    <label class="text-black-50">Lives in</label>
     <p>@Model.LiveIn</p>
 </div>
-@if (Model.Blogs.Any())
+@if (Model.LatestBlogs.Any())
 {
-<div class="row">
-    <h2>Blogs</h2>
-    @foreach (var blog in Model.Blogs)
-    {
-        <section>
-            <h4><a asp-controller="Blog" asp-action="Index" asp-route-id="@blog.Id">@blog.Title</a></h4>
-            @if (User.Identity.IsAuthenticated && (await Authorization.AuthorizeAsync(User, blog, Operations.Modify)).Succeeded)
+<div class="row d-flex justify-content-center mt-5">
+    <div class="col-lg-12">
+        <h3>
+            Latest blogs
+            <span class="ml-4 text-cente"><a style="font-size: medium;" asp-controller="Profile" asp-action="Blogs" asp-route-id="@Model.UserId">View all</a></span>
+        </h3>
+        <div>
+            @foreach (var blog in Model.LatestBlogs)
             {
-                <a asp-controller="Blog" asp-action="Edit" asp-route-id="@blog.Id">edit</a>
+            <div class="mt-4">
+                <div class="w-100 d-flex flex-row ">
+                    <h6 class="text-center">
+                        <a class="text-dark font-medium" asp-controller="Blog" asp-action="Index" asp-route-id="@blog.Id">@blog.Title</a>
+
+                        @if (User.Identity.IsAuthenticated && (await Authorization.AuthorizeAsync(User, blog, Operations.Modify)).Succeeded)
+                        {
+                            <span class="ml-4 font-medium text-cente"><a asp-controller="Blog" asp-action="Edit" asp-route-id="@blog.Id">edit</a></span>
+                        }
+                    </h6>
+                </div>
+                <a class="text-black-50" asp-controller="Profile" asp-action="Index" asp-route-id="@blog.Author.Id">@blog.Author.FirstName @blog.Author.LastName</a>
+            </div>
             }
-        </section>
-    }
+        </div>
+    </div>
 </div>
 }
 
-@if (Model.Comments.Any())
+@if (Model.LatestComments.Any())
 {
-<div class="row">
-    <h2>Comments</h2>
-    @foreach (var comment in Model.Comments)
-    {
-        <section>
-            <p>@comment.Content</p>
-        </section>
-    }
+<div class="mt-5 row d-flex justify-content-center">
+    <div class="col-lg-12">
+        <div class="">
+            <h3 class="card-title">
+                Latest comments
+                <span class="ml-4 text-cente"><a style="font-size: medium;" asp-controller="Profile" asp-action="Comments" asp-route-id="@Model.UserId">View all</a></span>
+            </h3>
+            <div class="comment-widgets">
+                @foreach (var comment in Model.LatestComments)
+                {
+                    <div class="d-flex flex-row comment-row m-t-0 mt-4">
+                        <div class="comment-text w-100">
+                            <span class="m-b-15 d-block">@comment.Comment.Content</span>
+                            <div class="comment-footer"> <span class="text-muted float-right">@comment.Comment.Created</span> </div>
+
+                            <a asp-controller="Blog" asp-action="Index" asp-route-id="@comment.BlogId">go to blog</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
 }

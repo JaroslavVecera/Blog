@@ -48,17 +48,27 @@ namespace Blog
         public async Task<List<BlogModel>> GetUserBlogs(ClaimsPrincipal principals)
         {
             ApplicationUser u = await UserManager.GetUserAsync(principals);
-            if (u == null)
+            return GetUserBlogs(u);
+        }
+
+        public List<BlogModel> GetUserBlogs(ApplicationUser user)
+        {
+            if (user == null)
                 return new List<BlogModel>();
-            return BlogService.UserBlogs(u);
+            return BlogService.UserBlogs(user);
         }
 
         public async Task<List<CommentModel>> GetUserComments(ClaimsPrincipal principals)
         {
             ApplicationUser u = await UserManager.GetUserAsync(principals);
-            if (u == null)
+            return GetUserComments(u);
+        }
+
+        public List<CommentModel> GetUserComments(ApplicationUser user)
+        {
+            if (user == null)
                 return new List<CommentModel>();
-            return BlogService.UserComments(u);
+            return BlogService.UserComments(user);
         }
 
         public async Task<ActionResult<EditBlogModel>> GetEditModel(int id, ClaimsPrincipal principals)

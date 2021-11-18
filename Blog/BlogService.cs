@@ -39,6 +39,7 @@ namespace Blog
             return DBContext.Blogs
                 .Include(blog => blog.Author)
                 .Include(blog => blog.Comments).ThenInclude(comment => comment.Author)
+                .OrderByDescending(blog => blog.LastChange)
                 .ToList();
         }
 
@@ -48,6 +49,7 @@ namespace Blog
                 .Include(blog => blog.Author)
                 .Include(blog => blog.Comments).ThenInclude(comment => comment.Author)
                 .Where(blog => blog.Author == u)
+                .OrderByDescending(blog => blog.LastChange)
                 .ToList();
         }
 
@@ -56,6 +58,7 @@ namespace Blog
             return DBContext.Comments
                 .Include(comment => comment.Author)
                 .Where(comment => comment.Author == u)
+                .OrderByDescending(comment => comment.Created)
                 .ToList();
         }
 
